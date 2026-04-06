@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import ApiError from './apiError'
+import ApiError from "./apiError";
 
 export const errorhndler = (error: any) => {
   console.log(error);

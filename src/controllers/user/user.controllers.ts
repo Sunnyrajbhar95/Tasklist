@@ -19,11 +19,12 @@ export const signUp = async ({
 }) => {
   try {
     if (!email || !password || !name) {
-      throw new Error("Email,Name and password is required");
+      console.log("Email,Name and password is required");
+      throw new ApiError("Email,Name and password is required", 400);
     }
     const userExist = await User.findOne({ email });
     if (userExist && userExist.isVerified) {
-      throw new Error("User Already Exist");
+      throw new ApiError("User Already Exist", 400);
     }
     const otp = getOtp();
     const otpExpiredAt = Date.now() + 5 * 60 * 1000;
@@ -44,9 +45,8 @@ export const signUp = async ({
       otp,
     });
     return user;
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error while Rgistering the user");
+  } catch (error: any) {
+    throw new ApiError(error.message, error.statusCode || 500);
   }
 };
 // otp verification controller

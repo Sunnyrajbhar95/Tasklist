@@ -1,6 +1,7 @@
 import { signUp } from "@/controllers/user/user.controllers";
 import { dbConnection } from "@/libs/dbConnection";
 import { NextResponse } from "next/server";
+import { errorhndler } from "@/libs/error/errorHandler";
 
 export async function POST(request: Request) {
   await dbConnection();
@@ -15,6 +16,6 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 501 });
+    return errorhndler(error);
   }
 }
