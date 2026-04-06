@@ -22,7 +22,7 @@ export const signUp = async ({
       console.log("Email,Name and password is required");
       throw new ApiError("Email,Name and password is required", 400);
     }
-    const userExist = await User.findOne({ email });
+    const userExist = await User.findOne({ email } as any);
     if (userExist && userExist.isVerified) {
       throw new ApiError("User Already Exist", 400);
     }
