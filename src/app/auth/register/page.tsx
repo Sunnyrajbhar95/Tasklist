@@ -61,7 +61,7 @@ export default function RegisterPage() {
         otp: Number(otp.join("")),
       });
       router.push("/auth/login");
-    } catch (error: any) {
+    } catch (error:any) {
       console.log(error.message);
     }
   };
