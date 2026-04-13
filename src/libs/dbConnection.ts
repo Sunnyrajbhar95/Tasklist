@@ -27,6 +27,7 @@ export const dbConnection = async () => {
     console.log("Mongodb connected successfully");
     return cached.conn;
   } catch (error) {
-    console.log(`Error while during the db connection ${error?.messasge}`);
+    console.log("Mongodb connection failed");
+    console.log(`Error while during the db connection ${error?.message}`);
   }
 };

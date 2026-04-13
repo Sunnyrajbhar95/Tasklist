@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { registerUser, otpVerification } from "@/services/auth/authservices";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function RegisterPage() {
     useRef<HTMLInputElement>(null),
   ];
 
+  // this fuction will handle the form submission and call the registerUser function from authservices
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -32,6 +34,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the otp input change and move the focus to the next input field
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) {
       return;
@@ -45,6 +48,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the backspace key press and move the focus to the previous input field
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     console.log(index);
     if (e.key === "Backspace") {
@@ -54,6 +58,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the otp verification and call the otpVerification function from authservices
   const otpverification = async () => {
     try {
       const response = await otpVerification({
@@ -61,9 +66,14 @@ export default function RegisterPage() {
         otp: Number(otp.join("")),
       });
       router.push("/auth/login");
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error.message);
     }
+  };
+
+  // this function will handle the google sign in and call the signIn function from next-auth/react
+  const handleGoogleSignIn = async () => {
+    await signIn("google", { callbackUrl: "/dashboard" });
   };
   return (
     <div className="min-h-screen w-full bg-[#181925] flex items-center justify-center p-4">
@@ -175,6 +185,13 @@ export default function RegisterPage() {
                     Log in
                   </Link>
                 </p>
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all active:scale-[0.98]"
+                  onClick={handleGoogleSignIn}
+                >
+                  Sign Up with Google
+                </button>
               </>
             ) : (
               <>
