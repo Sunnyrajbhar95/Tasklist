@@ -61,6 +61,8 @@ const handler = NextAuth({
     strategy: "jwt", // ✅ since we are using custom model
   },
 
+  secret: process.env.NEXTAUTH_SECRET,
+
   callbacks: {
     async signIn({ user, account }) {
       await dbConnection();

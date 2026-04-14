@@ -1,18 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { loginUser } from "@/services/auth/authservices";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  // this function will handle the login process using the credentials provider
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(formData, "form data");
@@ -20,7 +25,7 @@ export default function LoginPage() {
       const response = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
-        redirect: false,
+        callbackUrl: callbackUrl,
       });
       if (response?.ok) {
         router.push("/dashboard");
@@ -30,9 +35,17 @@ export default function LoginPage() {
     }
   };
 
+  // this function will handle the google sign in process
   const handleGoogleSignIn = async () => {
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", { callbackUrl: callbackUrl });
   };
+
+  // this useEffect will redirect the user to the dashboard if they are already logged in
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session]);
 
   return (
     <div className="min-h-screen w-full bg-[#181925] flex items-center justify-center p-4">

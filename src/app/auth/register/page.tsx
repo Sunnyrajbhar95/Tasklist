@@ -1,13 +1,15 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { registerUser, otpVerification } from "@/services/auth/authservices";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function RegisterPage() {
+  const { data: session } = useSession();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -75,6 +77,13 @@ export default function RegisterPage() {
   const handleGoogleSignIn = async () => {
     await signIn("google", { callbackUrl: "/dashboard" });
   };
+
+  // this useEffect will redirect the user to the dashboard if they are already logged in
+  useEffect(()=>{
+     if (session) {
+      router.push("/dashboard");
+    }
+  },[session])
   return (
     <div className="min-h-screen w-full bg-[#181925] flex items-center justify-center p-4">
       <div className="w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-[#25273E] flex flex-col md:flex-row">
