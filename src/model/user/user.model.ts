@@ -15,13 +15,17 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: false,
       match: [
         /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
         "Please Enter Valid password ",
       ],
     },
-
+    provider: {
+      type: String,
+      enum: ["Credentials", "google"],
+      default: "Credentials",
+    },
     otp: {
       type: Number,
     },

@@ -12,11 +12,6 @@ export async function POST(request: Request) {
       { success: true, message: "Otp verified successfully" },
       { status: 200 },
     );
-    response.cookies.set("token", token, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24,
-    });
 
     return response;
   } catch (error) {

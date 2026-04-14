@@ -40,6 +40,7 @@ export const signUp = async ({
     const user = await User.create({
       name,
       email,
+      provider: "Credentials",
       otpExpiredAt,
       password: hashPassword,
       otp,

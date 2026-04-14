@@ -1,12 +1,15 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { registerUser, otpVerification } from "@/services/auth/authservices";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function RegisterPage() {
+  const { data: session } = useSession();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,6 +25,7 @@ export default function RegisterPage() {
     useRef<HTMLInputElement>(null),
   ];
 
+  // this fuction will handle the form submission and call the registerUser function from authservices
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -32,6 +36,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the otp input change and move the focus to the next input field
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) {
       return;
@@ -45,6 +50,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the backspace key press and move the focus to the previous input field
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     console.log(index);
     if (e.key === "Backspace") {
@@ -54,6 +60,7 @@ export default function RegisterPage() {
     }
   };
 
+  // this function will handle the otp verification and call the otpVerification function from authservices
   const otpverification = async () => {
     try {
       const response = await otpVerification({
@@ -61,10 +68,22 @@ export default function RegisterPage() {
         otp: Number(otp.join("")),
       });
       router.push("/auth/login");
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error.message);
     }
   };
+
+  // this function will handle the google sign in and call the signIn function from next-auth/react
+  const handleGoogleSignIn = async () => {
+    await signIn("google", { callbackUrl: "/dashboard" });
+  };
+
+  // this useEffect will redirect the user to the dashboard if they are already logged in
+  useEffect(()=>{
+     if (session) {
+      router.push("/dashboard");
+    }
+  },[session])
   return (
     <div className="min-h-screen w-full bg-[#181925] flex items-center justify-center p-4">
       <div className="w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-[#25273E] flex flex-col md:flex-row">
@@ -175,6 +194,13 @@ export default function RegisterPage() {
                     Log in
                   </Link>
                 </p>
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all active:scale-[0.98]"
+                  onClick={handleGoogleSignIn}
+                >
+                  Sign Up with Google
+                </button>
               </>
             ) : (
               <>

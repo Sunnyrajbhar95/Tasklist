@@ -1,25 +1,51 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { loginUser } from "@/services/auth/authservices";
+import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
- 
-
-  const handleLogin = async () => {
+  // this function will handle the login process using the credentials provider
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formData, "form data");
     try {
-      const repsponse = await loginUser(formData);
-      console.log(repsponse);
+      const response = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        callbackUrl: callbackUrl,
+      });
+      if (response?.ok) {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // this function will handle the google sign in process
+  const handleGoogleSignIn = async () => {
+    await signIn("google", { callbackUrl: callbackUrl });
+  };
+
+  // this useEffect will redirect the user to the dashboard if they are already logged in
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session]);
 
   return (
     <div className="min-h-screen w-full bg-[#181925] flex items-center justify-center p-4">
@@ -63,7 +89,9 @@ export default function LoginPage() {
                   type="email"
                   placeholder="name@example.com"
                   value={formData.email}
-                  onChange={(e)=>setFormData({...formData,email:e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="w-full px-4 py-3 bg-[#181925] border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
                   required
                 />
@@ -89,7 +117,9 @@ export default function LoginPage() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e)=>setFormData({...formData,password:e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="w-full px-4 py-3 bg-[#181925] border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
                   required
                 />
@@ -112,7 +142,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 className="w-full py-3.5 mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all active:scale-[0.98]"
-                onClick={handleLogin}
+                onClick={(e) => handleLogin(e)}
               >
                 Sign In
               </button>
@@ -128,6 +158,13 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
+          <button
+            type="submit"
+            className="w-full py-3.5 mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all active:scale-[0.98]"
+            onClick={handleGoogleSignIn}
+          >
+            Sign in with Google
+          </button>
         </div>
       </div>
     </div>
