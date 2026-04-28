@@ -2,6 +2,8 @@ import User from "@/model/user/user.model";
 import bcrypt from "bcrypt";
 import ApiError from "@/libs/error/apiError";
 import jwt from "jsonwebtoken";
+import { userResonse,requestBody,resetPasswordType } from "@/type/auth.type"; 
+
 
 const getOtp = () => {
   return Math.floor(Math.random() * 9000 + 1000);
@@ -22,7 +24,7 @@ export const signUp = async ({
       console.log("Email,Name and password is required");
       throw new ApiError("Email,Name and password is required", 400);
     }
-    const userExist = await User.findOne({ email } as any);
+    const userExist:userResonse | null= await User.findOne({ email});
     if (userExist && userExist.isVerified) {
       throw new ApiError("User Already Exist", 400);
     }
@@ -61,7 +63,7 @@ export const otpVerification = async ({
   if (!email || !otp) {
     throw new ApiError("Email or Otp is required", 400);
   }
-  const user = await User.findOne({ email });
+  const user:userResonse | null = await User.findOne({ email });
   if (!user) {
     throw new ApiError("User does not exit", 404);
   }
@@ -83,13 +85,12 @@ export const otpVerification = async ({
 };
 
 // controller to login the user
-export const login = async (data: any) => {
+export const login = async (data: requestBody) => {
   const { email, password } = data;
-  console.log(data);
   if (!email || !password) {
     throw new ApiError("email or password is reqired", 400);
   }
-  const user = await User.findOne({ email });
+  const user:userResonse = await User.findOne({ email });
   if (!user) {
     throw new ApiError("User not found ", 404);
   }
@@ -107,7 +108,7 @@ export const login = async (data: any) => {
 };
 
 // cotroller to reset the password
-export const verificationtoken = async (data: any) => {
+export const verificationtoken = async (data: requestBody) => {
   const { email } = data;
   if (!email) {
     throw new ApiError("Email is required", 400);
@@ -121,12 +122,12 @@ export const verificationtoken = async (data: any) => {
 };
 
 // controller to reset the password
-export const resetPassword = async (data: any) => {
+export const resetPassword = async (data: resetPasswordType) => {
   const { token, newPassword } = data;
   if (!token || !newPassword) {
     throw new ApiError("Token and new password is required", 400);
   }
-  const user = await User.findById(token);
+  const user: = await User.findById(token);
   if (!user) {
     throw new ApiError("Invalid token", 404);
   }
