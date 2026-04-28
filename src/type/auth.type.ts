@@ -16,6 +16,7 @@ export interface userResonse {
   otp?: number;
   createdAt?: string;
   updatedAt: string;
+  save?: () => Promise<userResonse>;
 }
 
 export interface requestBody {

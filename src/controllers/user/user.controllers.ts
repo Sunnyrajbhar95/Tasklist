@@ -94,7 +94,6 @@ export const login = async (data: requestBody) => {
   if (!user) {
     throw new ApiError("User not found ", 404);
   }
-  console.log(user);
   const checkPassword = await bcrypt.compare(password, user?.password);
   if (!checkPassword) {
     throw new ApiError("Invaild email or password", 401);
@@ -113,7 +112,7 @@ export const verificationtoken = async (data: requestBody) => {
   if (!email) {
     throw new ApiError("Email is required", 400);
   }
-  const user = await User.findOne({ email, isVerified: true });
+  const user:userResonse = await User.findOne({ email, isVerified: true });
   if (!user) {
     throw new ApiError("User not found", 404);
   }
@@ -127,7 +126,7 @@ export const resetPassword = async (data: resetPasswordType) => {
   if (!token || !newPassword) {
     throw new ApiError("Token and new password is required", 400);
   }
-  const user: = await User.findById(token);
+  const user:userResonse = await User.findById(token);
   if (!user) {
     throw new ApiError("Invalid token", 404);
   }
